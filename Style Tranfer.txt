@@ -11,3 +11,20 @@ from keras.applications.vgg16 import VGG16
 import tensorflow as tf
 from scipy.optimize import fmin_l_bfgs_b
 
+ITERATIONS = 15
+CHANNELS = 3
+IMAGE_SIZE = 500
+IMAGE_WIDTH = IMAGE_SIZE
+IMAGE_HEIGHT = IMAGE_SIZE
+IMAGENET_MEAN_RGB_VALUES = [123.68, 116.779, 103.939]
+CONTENT_WEIGHT = 0.2
+STYLE_WEIGHT = 6
+TOTAL_VARIATION_WEIGHT = 0.9
+TOTAL_VARIATION_LOSS_FACTOR = 1.2
+
+input_image_path = "input.png"
+style_image_path = "style.png"
+output_image_path = "output.png"
+combined_image_path = "combined.png"
+san_francisco_image_path = "/content/drive/My Drive/input56.png"
+tytus_image_path = "/content/drive/My Drive/style56.png"
