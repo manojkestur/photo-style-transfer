@@ -44,3 +44,38 @@ input_image
 style_image = load_img(tytus_image_path)
 style_image.save(style_image_path)
 style_image
+
+def content_loss(content, combination):
+    return backend.sum(backend.square(combination - content))
+layers = dict([(layer.name, layer.output) for layer in model.layers])
+content_layer = "block2_conv2"
+layer_features = layers[content_layer]
+content_image_features = layer_features[0, :, :, :]
+combination_features = layer_features[2, :, :, :]
+loss = backend.variable(0.)
+loss = loss + CONTENT_WEIGHT * content_loss(content_image_features,combination_features)
+
+def gram_matrix(x):
+    features = backend.batch_flatten(backend.permute_dimensions(x, (2, 0, 1)))
+    gram = backend.dot(features, backend.transpose(features))
+    return gram
+
+def compute_style_loss(style, combination):
+    style = gram_matrix(style)
+    combination = gram_matrix(combination)
+    size = IMAGE_HEIGHT * IMAGE_WIDTH
+    return backend.sum(backend.square(style - combination)) / (4. * (CHANNELS ** 2) * (size ** 2))
+style_layers = ["block1_conv2", "block2_conv2", "block3_conv3", "block4_conv3", "block5_conv3"]
+for layer_name in style_layers:
+    layer_features = layers[layer_name]
+    style_features = layer_features[1, :, :, :]
+    combination_features = layer_features[2, :, :, :]
+    style_loss = compute_style_loss(style_features, combination_features)
+    loss += (STYLE_WEIGHT / len(style_layers)) * style_loss
+
+def total_variation_loss(x):
+    a = backend.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, 1:, :IMAGE_WIDTH-1, :])
+    b = backend.square(x[:, :IMAGE_HEIGHT-1, :IMAGE_WIDTH-1, :] - x[:, :IMAGE_HEIGHT-1, 1:, :])
+    return backend.sum(backend.pow(a + b, TOTAL_VARIATION_LOSS_FACTOR))
+loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
+
