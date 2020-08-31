@@ -79,3 +79,25 @@ def total_variation_loss(x):
     return backend.sum(backend.pow(a + b, TOTAL_VARIATION_LOSS_FACTOR))
 loss = loss + TOTAL_VARIATION_WEIGHT * total_variation_loss(combination_image)
 
+outputs = [loss]
+outputs += backend.gradients(loss, combination_image)
+def evaluate_loss_and_gradients(x):
+    x = x.reshape((1, IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
+    outs = backend.function([combination_image], outputs)([x])
+    loss = outs[0]
+    gradients = outs[1].flatten().astype("float64")
+    return loss, gradients
+class Evaluator:
+    def loss(self, x):
+        loss, gradients = evaluate_loss_and_gradients(x)
+        self._gradients = gradients
+        return loss
+    def gradients(self, x):
+        return self._gradients
+evaluator = Evaluator()
+
+x = np.random.uniform(0, 255, (1, IMAGE_HEIGHT, IMAGE_WIDTH, 3)) - 128.
+for i in range(ITERATIONS):
+    x, loss, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients, maxfun=20)
+    print("Iteration %d completed with loss %d" % (i, loss)) 
+
