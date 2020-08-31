@@ -45,6 +45,19 @@ style_image = load_img(tytus_image_path)
 style_image.save(style_image_path)
 style_image
 
+input_image_array = np.asarray(input_image, dtype="float32")
+input_image_array = np.expand_dims(input_image_array, axis=0)
+input_image_array[:, :, :, 0] -= IMAGENET_MEAN_RGB_VALUES[2]
+input_image_array[:, :, :, 1] -= IMAGENET_MEAN_RGB_VALUES[1]
+input_image_array[:, :, :, 2] -= IMAGENET_MEAN_RGB_VALUES[0]
+input_image_array = input_image_array[:, :, :, ::-1]
+style_image_array = np.asarray(style_image, dtype="float32")
+style_image_array = np.expand_dims(style_image_array, axis=0)
+style_image_array[:, :, :, 0] -= IMAGENET_MEAN_RGB_VALUES[2]
+style_image_array[:, :, :, 1] -= IMAGENET_MEAN_RGB_VALUES[1]
+style_image_array[:, :, :, 2] -= IMAGENET_MEAN_RGB_VALUES[0]
+style_image_array = style_image_array[:, :, :, ::-1]
+
 def content_loss(content, combination):
     return backend.sum(backend.square(combination - content))
 layers = dict([(layer.name, layer.output) for layer in model.layers])
