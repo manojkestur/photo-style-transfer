@@ -128,3 +128,15 @@ output_image = Image.fromarray(x)
 output_image.save(output_image_path)
 output_image
 
+combined = Image.new("RGB", (IMAGE_WIDTH*3, IMAGE_HEIGHT))
+x_offset = 0
+for image in map(Image.open, [input_image_path, style_image_path, output_image_path]):
+    combined.paste(image, (x_offset, 0))
+    x_offset = x_offset+IMAGE_WIDTH+20
+combined.save(combined_image_path)
+print("")
+print("")
+print('              INPUT IMAGE                                                 STYLE IMAGE                                       OUTPUT')
+print("")
+combined
+
