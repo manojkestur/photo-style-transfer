@@ -11,16 +11,16 @@ from keras.applications.vgg16 import VGG16
 import tensorflow as tf
 from scipy.optimize import fmin_l_bfgs_b
 
-ITERATIONS = 15
+ITERATIONS = 12
 CHANNELS = 3
 IMAGE_SIZE = 400
 IMAGE_WIDTH = IMAGE_SIZE
 IMAGE_HEIGHT = IMAGE_SIZE
 IMAGENET_MEAN_RGB_VALUES = [123.68, 116.779, 103.939]
-CONTENT_WEIGHT = 0.06
+CONTENT_WEIGHT = 0.04
 STYLE_WEIGHT = 5
-TOTAL_VARIATION_WEIGHT = 0.89
-TOTAL_VARIATION_LOSS_FACTOR = 1.0
+TOTAL_VARIATION_WEIGHT = 0.9
+TOTAL_VARIATION_LOSS_FACTOR = 1.15
 
 input_image_path = "input.png"
 style_image_path = "style.png"
