@@ -114,3 +114,17 @@ for i in range(ITERATIONS):
     x, loss, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients, maxfun=20)
     print("Iteration %d completed with loss %d" % (i, loss)) 
 
+x = np.random.uniform(0, 255, (1, IMAGE_HEIGHT, IMAGE_WIDTH, 3)) - 128.
+for i in range(ITERATIONS):
+    x, loss, info = fmin_l_bfgs_b(evaluator.loss, x.flatten(), fprime=evaluator.gradients, maxfun=20)
+    print("Iteration %d completed with loss %d" % (i, loss))    
+x = x.reshape((IMAGE_HEIGHT, IMAGE_WIDTH, CHANNELS))
+x = x[:, :, ::-1]
+x[:, :, 0] += IMAGENET_MEAN_RGB_VALUES[2]
+x[:, :, 1] += IMAGENET_MEAN_RGB_VALUES[1]
+x[:, :, 2] += IMAGENET_MEAN_RGB_VALUES[0]
+x = np.clip(x, 0, 255).astype("uint8")
+output_image = Image.fromarray(x)
+output_image.save(output_image_path)
+output_image
+
